@@ -1,0 +1,111 @@
+Download xammp and create a db through url > localhost/phpmyadmin
+Download platform independent Connector or choose from option "add Library"
+url : https://dev.mysql.com/downloads/connector/j/
+
+write a java project and also add bin jarfile from above connector to library using add jarfile option
+
+Our development process includes ::
+
+step 1 : add mysql database driver to classpath (done with jarfile in above step or while choosing the jdbc file from add library) 
+step 2 : get connection
+step 2 : create a statement
+step 3 : execute sql query
+step 4 : process result set
+
+//doing the task with JFrame
+
+
+****step - 1*****
+create a project without the main class
+create a JFrame
+go to source code 
+
+put the followint code after initcomponenets() to set the connection:
+/////////////////////////////////////////
+        try{
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost/student_info","root","");            
+            JOptionPane.showMessageDialog(null,"connection established");
+        }
+        catch(SQLException ex){
+            JOptionPane.showMessageDialog(null,ex + " Error on connecting to database ");
+        }
+///////////////////////////////////////////
+
+
+****step -  2****
+now go to design, open pallete, and put appropriate label , textfields and buttons by drag and drop
+
+
+****step - 3 ****
+Under the same package , create a class that sets the user's data
+this class acts as temporarily storing the data of database...
+////////////////////////////////////////////
+public class UserClass {
+    private String name;
+    private String faculty;
+    private String contact;
+    
+    public UserClass(){}
+    public UserClass(String Name, String Faculty, String Contact){
+        this.name    = Name;
+        this.faculty = Faculty;
+        this.contact = Contact;
+    }
+    public void get_name(String Name){
+        this.name = Name;
+    }
+    public void set_faculty(String Faculty){
+        this.faculty  = Faculty;
+    }
+    public void set_contact(String Contact){
+        this.contact = Contact;
+    }
+    Also write down all the getters of name, faculty  as like setters above.......
+}
+//////////////////////////////////////////////////////
+
+**** Step - 4 ****
+////////create method Arraylist///////////////
+this method is used to put the data info to arraylist<class>
+do this on the frame class after the connection code
+
+public ArrayList<UserClass> getUsersList()
+    {
+        ArrayList<UserClass> userList = new ArrayList<>();             
+        String query = "SELECT * FROM `list`";
+        UserClass user;
+        
+        try{
+            rs = stat.executeQuery(query);
+            
+            while(rs.next()){
+                user = new UserClass(rs.getInt("Id"), rs.getString("Name"),rs.getString("Faculty"),rs.getString("Contact"));             
+                userList.add(user);
+            }            
+        }
+        catch(SQLException ex)
+        {
+            javax.swing.JOptionPane.showMessageDialog(null,ex);
+            System.exit(0);
+        }
+        return userList;
+    }
+
+*********Step - 5***********
+////////Create method viewDataOnTable on frame class/////////////
+
+public void viewDataOnTable(){
+       ArrayList<UserClass> userList = getUsersList();  //get the list from above method
+       DefaultTableModel tableModel = (DefaultTableModel)jTable1.getModel();
+       Object[] rows = new Object[4];               //total no. of columns : 4
+       for(int i = 0 ; i < userList.size(); i++){   
+           rows[0] = userList.get(i).getId();
+           rows[1] = userList.get(i).getName();
+           rows[2] = userList.get(i).getFaculty();
+           rows[3] = userList.get(i).getContact();
+           tableModel.addRow(rows);           
+       }
+   }
+
+///////write code for update , delete , insert .... etc ////////
